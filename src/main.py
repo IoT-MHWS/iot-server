@@ -36,10 +36,10 @@ def mongo_get_client(address, port):
 
 def mqtt_on_connect(client: mqtt.Client, userdata, flags, rc):
     if rc == 0:
-        print("Connected to MQTT broker")
+        logging.error("Connected to MQTT broker")
         client.subscribe(f"/{MQTT_DOMAIN}/#")
     else:
-        print(f"Failed to connect, return code: {rc}")
+        logging.error(f"Failed to connect, return code: {rc}")
 
 
 def mqtt_on_message(client, userdata, msg):
@@ -58,7 +58,7 @@ def mqtt_on_message(client, userdata, msg):
         data["sensor"] = device_id
         data["payload"] = json.loads(payload)
     except ValueError as e:
-        print(repr(e))
+        logging.error(repr(e))
         return
 
     database = mongo_client[top]
@@ -79,6 +79,8 @@ def mqtt_connect_loop_forever(address: str, port: int) -> mqtt.Client:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
     args = process_arguments()
 
     broker_socket: Socket = args.broker_socket
