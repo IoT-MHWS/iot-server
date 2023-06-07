@@ -29,15 +29,17 @@ def on_message(client, userdata, msg):
     payload = msg.payload.decode()
 
     top, build_id, room, src_type, sensor = msg.topic.split("/")[1:]
-    data = json.loads(payload)
+    data = {}
     data["room"] = room
     data["type"] = src_type
     data["sensor"] = sensor
+    data["payload"] = json.loads(payload)
 
     database = mongo_client[top]
     collection = database[build_id]
 
     collection.insert_one(data)
+    print(data)
 
 mqtt_client = mqtt.Client()
 mqtt_client.on_connect = on_connect
